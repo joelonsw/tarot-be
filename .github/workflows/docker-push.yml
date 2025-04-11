@@ -43,3 +43,22 @@ jobs:
         docker build -t $IMAGE_NAME:latest -t $IMAGE_NAME:$SHORT_SHA .
         docker push $IMAGE_NAME:latest
         docker push $IMAGE_NAME:$SHORT_SHA
+
+    - name: Update image tag in tarot-config repo
+      run: |
+        git config --global user.email "github-actions@github.com"
+        git config --global user.name "GitHub Actions"
+
+        SHORT_SHA=${GITHUB_SHA::7}
+        IMAGE_NAME=${{ secrets.DOCKERHUB_USERNAME }}/tarot-be
+
+        # tarot-config 레포 클론
+        git clone https://x-access-token:${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/joelonsw/tarot-config.git
+        cd tarot-config
+
+        # 이미지 태그 업데이트
+        sed -i 's|'"$IMAGE_NAME"':.*|'"$IMAGE_NAME:$SHORT_SHA"'|' k8s/deployment.yaml
+
+        git add k8s/deployment.yaml
+        git commit -m "Update image tag to $SHORT_SHA"
+        git push origin main
