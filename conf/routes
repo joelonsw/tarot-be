@@ -6,4 +6,4 @@
 # An example controller showing a sample home page
 GET        /                  controllers.HomeController.index()
 
-GET        /api/result        controllers.ResultController.getTarotResult()
+GET        /api/result        controllers.ResultController.getTarotResult(selectedCards: String)
